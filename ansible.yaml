@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  vars:
+    org_id: "12345"
+  gather_facts: false
+  tasks:
+
+    - name: Get Organization Networks
+      cisco.meraki.networks_info:
+        organizationId: "{{ org_id }}"
+      register: result
+
+    - name: Filter networks with "appliance" productTypes
+      set_fact:
+        filtered_networks: "{{ result.meraki_response | selectattr('productTypes', 'contains', 'appliance') | list }}"
+
+    - name: Configure FW rule
+      cisco.meraki.networks_appliance_firewall_l3_firewall_rules:
+        state: present
+        networkId: "{{ item.id }}"
+        rules:
+          - comment: RDP to 1.2.3.0/24.
+            destCidr: 1.2.3.0/24
+            destPort: '3389'
+            policy: allow
+            protocol: tcp
+            srcCidr: Any
+            srcPort: Any
+            syslogEnabled: false
+
+      loop: "{{ filtered_networks }}"
+      loop_control:
+        label: "{{ item.id }}"
