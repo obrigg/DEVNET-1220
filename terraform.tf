@@ -7,11 +7,12 @@ terraform {
   }
 }
 provider "meraki" {
+  meraki_requests_per_second = 5
 }
 
 data "meraki_networks" "my_networks" {
   provider        = meraki
-  organization_id = "12345"
+  organization_id = "819655132181432411"
 }
 
 resource "meraki_networks_appliance_firewall_l3_firewall_rules" "my_fw_rule" {

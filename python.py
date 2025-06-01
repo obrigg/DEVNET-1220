@@ -1,7 +1,8 @@
 import meraki
 
-dashboard = meraki.DashboardAPI()
-networks = dashboard.organizations.getOrganizationNetworks(organizationId=12345)
+dashboard = meraki.DashboardAPI(suppress_logging=True)
+networks = dashboard.organizations.getOrganizationNetworks(organizationId=3705899543372498445)
+print (f"\n\nRetrieved {len(networks)} networks\n\n")
 
 rules = [
     {
@@ -19,3 +20,4 @@ rules = [
 for network in networks:
     if "appliance" in network['productTypes']:
         dashboard.appliance.updateNetworkApplianceFirewallL3FirewallRules(networkId=network['id'], rules=rules)
+        print (f"Applied rules on network {network['name']}")
